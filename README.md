@@ -1,97 +1,50 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Card Stack Animation Assignment
 
-# Getting Started
+This repo now contains a focused React Native implementation of the event recommendation stack from the assignment brief: layered card peeks, drag-following card motion, a compact list-mode endpoint, rubber-banding at the edges, and a reduced-motion fallback.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## What I built
 
-## Step 1: Start Metro
+- A single-screen assistant surface in `App.tsx` to give the stack the right conversational context without spending time on the rest of a chat product.
+- A dedicated `EventRecommendationDeck` component in [src/components/EventRecommendationDeck.tsx](/C:/Users/eppak/CardStackAssignment/src/components/EventRecommendationDeck.tsx) with:
+  - 5 mock event cards plus 1 list-mode state
+  - leftward swipe to advance through cards
+  - rightward swipe to return to the previous state
+  - a special card-to-list transition that brings the list in as one unit
+  - a matching list-to-card reverse transition
+  - commit-time page-dot updates
+  - rubber-band resistance on the first card and after the list
+  - `prefers-reduced-motion` handling through `AccessibilityInfo`, using a `120ms` cross-fade instead of the slide animation
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Motion approach
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- The outgoing front card always tracks the gesture directly on the x-axis. There is no rotation and no scale on the dragged card.
+- The second and third layers are driven from the same gesture progress so the stack feels like one choreographed system rather than independent pieces.
+- I kept the list-mode transition visually grouped by moving the list container as a unit instead of staggering rows into a cascade.
+- Dots change at commit time, while the visual state finishes its settle animation afterward.
+
+## Trade-offs
+
+- The brief text had one directional inconsistency: most of the description says “peek cards on the right,” while the edge-case notes imply “swipe right to go back.” I implemented the standard interpretation for that layout: swipe left to go forward, swipe right to go back. The gesture math is localized, so mirroring the direction is a quick follow-up if needed.
+- I chose a compact single-component animation model instead of building a generalized carousel system. That keeps the assignment readable and easy to tune, which felt more valuable here than abstraction.
+- The reduced-motion path prioritizes clarity and correctness over gesture-preview fidelity: the state still changes via drag threshold, but the visual transition becomes a fast cross-fade instead of a live slide.
+
+## If I had more time
+
+- Tune timings side-by-side against the exact reference recording and expose those values as a tiny motion config block for easier iteration.
+- Add a lightweight regression harness around edge gestures and interrupting in-flight transitions.
+- Record and include the required 30–60 second demo clip from a real iPhone simulator or device so the final submission shows the motion at full speed.
+
+## Running locally
 
 ```sh
-# Using npm
+npm install
 npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
+For iOS on macOS:
 
 ```sh
 bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
