@@ -1,50 +1,144 @@
-# Card Stack Animation Assignment
+# CardStackAssignment
 
-This repo now contains a focused React Native implementation of the event recommendation stack from the assignment brief: layered card peeks, drag-following card motion, a compact list-mode endpoint, rubber-banding at the edges, and a reduced-motion fallback.
+## Demo Recording
+
+[Open recording.mp4](assets/recording.mp4)
+
+This project is a small React Native event browsing experience.
+
+The user sees one event card at a time, swipes left to move forward, swipes right to go back, and ends on a simple list view with a few more suggestions.
+
+
 
 ## What I built
 
-- A single-screen assistant surface in `App.tsx` to give the stack the right conversational context without spending time on the rest of a chat product.
-- A dedicated `EventRecommendationDeck` component in [src/components/EventRecommendationDeck.tsx](/C:/Users/eppak/CardStackAssignment/src/components/EventRecommendationDeck.tsx) with:
-  - 5 mock event cards plus 1 list-mode state
-  - leftward swipe to advance through cards
-  - rightward swipe to return to the previous state
-  - a special card-to-list transition that brings the list in as one unit
-  - a matching list-to-card reverse transition
-  - commit-time page-dot updates
-  - rubber-band resistance on the first card and after the list
-  - `prefers-reduced-motion` handling through `AccessibilityInfo`, using a `120ms` cross-fade instead of the slide animation
+I built a swipeable card carousel with:
 
-## Motion approach
+- One focused card on screen at a time
+- Smooth swipe gestures
+- Back navigation to previous cards
+- A final "list mode" screen after the last card
+- Page dots to show progress
+- Reduced motion support for accessibility
+- Responsive sizing so the layout fits different screen widths
 
-- The outgoing front card always tracks the gesture directly on the x-axis. There is no rotation and no scale on the dragged card.
-- The second and third layers are driven from the same gesture progress so the stack feels like one choreographed system rather than independent pieces.
-- I kept the list-mode transition visually grouped by moving the list container as a unit instead of staggering rows into a cascade.
-- Dots change at commit time, while the visual state finishes its settle animation afterward.
+## Folder structure
 
-## Trade-offs
+This is the main structure used for the feature:
 
-- The brief text had one directional inconsistency: most of the description says “peek cards on the right,” while the edge-case notes imply “swipe right to go back.” I implemented the standard interpretation for that layout: swipe left to go forward, swipe right to go back. The gesture math is localized, so mirroring the direction is a quick follow-up if needed.
-- I chose a compact single-component animation model instead of building a generalized carousel system. That keeps the assignment readable and easy to tune, which felt more valuable here than abstraction.
-- The reduced-motion path prioritizes clarity and correctness over gesture-preview fidelity: the state still changes via drag threshold, but the visual transition becomes a fast cross-fade instead of a live slide.
+```text
+CardStackAssignment/
+|- App.tsx
+|- README.md
+|- src/
+|  \- components/
+|     \- CardStackCarousel/
+|        |- index.tsx
+|        |- CardItem.tsx
+|        |- ListViewPanel.tsx
+|        |- PageDots.tsx
+|        |- mockData.ts
+|        \- types.ts
+```
 
-## If I had more time
+## What each file does
 
-- Tune timings side-by-side against the exact reference recording and expose those values as a tiny motion config block for easier iteration.
-- Add a lightweight regression harness around edge gestures and interrupting in-flight transitions.
-- Record and include the required 30–60 second demo clip from a real iPhone simulator or device so the final submission shows the motion at full speed.
+- `App.tsx`
+  Loads the screen shell and renders the carousel.
 
-## Running locally
+- `src/components/CardStackCarousel/index.tsx`
+  Main feature logic. Handles gestures, animation flow, responsive sizing, forward/back movement, and the final list state.
 
-```sh
+- `src/components/CardStackCarousel/CardItem.tsx`
+  UI for a single event card.
+
+- `src/components/CardStackCarousel/ListViewPanel.tsx`
+  UI for the final list-style recommendation panel.
+
+- `src/components/CardStackCarousel/PageDots.tsx`
+  Small progress indicator under the cards.
+
+- `src/components/CardStackCarousel/mockData.ts`
+  Demo card data and list data used by the feature.
+
+- `src/components/CardStackCarousel/types.ts`
+  Shared TypeScript types for the carousel data.
+
+## My approach
+
+I tried to keep the solution simple to understand and easy to extend.
+
+My main approach was:
+
+- Keep the feature in one small folder so the code is easy to find
+- Separate logic from presentational pieces
+- Use `react-native-gesture-handler` for touch gestures
+- Use `react-native-reanimated` for smooth card movement
+- Keep the card, list panel, and dots as separate components
+- Use simple mock data so the UI can be tested quickly
+- Add reduced motion handling so the experience is more accessible
+
+I also kept the animation states explicit:
+
+- current card
+- next card preview
+- previous card reveal
+- final list mode
+
+That makes the flow easier to reason about when debugging swipe behavior.
+
+## Trade-offs I considered
+
+I made a few practical trade-offs to keep the solution clean and safe:
+
+- I used local mock data instead of API data.
+  This keeps the assignment focused on interaction quality, not backend wiring.
+
+- I kept most swipe orchestration in `index.tsx`.
+  This makes the main behavior easier to trace in one file, but it also means the file is larger than ideal.
+
+- I used a custom fallback visual treatment instead of adding more UI dependencies.
+  This keeps setup smaller, but a dedicated gradient or design package could offer more polish.
+
+- I optimized for readability and predictable behavior over very advanced animation tricks.
+  The result is easier for another developer to maintain.
+
+## What I would change with more time
+
+If I had more time, I would improve these areas:
+
+- Move some animation helpers out of `index.tsx` into smaller hooks or utilities
+- Add unit tests for swipe state changes and list mode transitions
+- Add integration tests for gesture behavior
+- Replace mock data with typed data from a real source
+- Add better theming so colors, spacing, and typography are easier to customize
+- Improve card accessibility labels for screen readers
+- Add loading, empty, and error states if the data becomes dynamic
+
+## Why I chose this structure
+
+I wanted another developer to open the project and understand it quickly.
+
+That is why I used:
+
+- one feature folder
+- small UI components
+- shared types
+- data in one place
+- one clear entry point
+
+This structure is simple, scalable, and easy to hand off.
+
+## Run the project
+
+```bash
 npm install
 npm start
 npm run android
 ```
 
-For iOS on macOS:
+For iOS:
 
-```sh
-bundle exec pod install
+```bash
 npm run ios
 ```

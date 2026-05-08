@@ -1,56 +1,21 @@
-import React, { useState } from 'react';
-import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  SafeAreaProvider,
-  SafeAreaView,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import EventRecommendationDeck from './src/components/EventRecommendationDeck';
+import CardStackCarousel from './src/components/CardStackCarousel';
 
-const SCREEN_BACKGROUND = '#081626';
+const SCREEN_BACKGROUND = '#0A0A0F';
 
 function AppContent() {
-  const insets = useSafeAreaInsets();
-  const [pageScrollEnabled, setPageScrollEnabled] = useState(true);
-
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={styles.screen}>
-      <View style={[styles.ambientOrb, styles.ambientOrbOne]} />
-      <View style={[styles.ambientOrb, styles.ambientOrbTwo]} />
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.screen}>
+      <View style={styles.page}>
+        <Text style={styles.headline}>Events</Text>
+        <Text style={styles.subheadline}>Swipe through the cards to browse.</Text>
 
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + 28 },
-        ]}
-        directionalLockEnabled
-        scrollEnabled={pageScrollEnabled}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.page}>
-          <Text style={styles.kicker}>Card Stack Motion Assignment</Text>
-          <Text style={styles.headline}>
-            A recommendation stack tuned for gesture feel, layered depth, and a
-            clean handoff into list mode.
-          </Text>
-
-          <View style={styles.bubble}>
-            <Text style={styles.assistantLabel}>Assistant</Text>
-            <Text style={styles.assistantCopy}>
-              I found a few event ideas that match your recent saves. Start
-              swiping through the spotlight cards, then keep going to collapse
-              the rest into a list.
-            </Text>
-
-            <EventRecommendationDeck
-              onSwipeActiveChange={isActive => {
-                setPageScrollEnabled(!isActive);
-              }}
-            />
-          </View>
-        </View>
-      </ScrollView>
+        <CardStackCarousel />
+      </View>
     </SafeAreaView>
   );
 }
@@ -78,73 +43,25 @@ const styles = StyleSheet.create({
     backgroundColor: SCREEN_BACKGROUND,
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
-  },
   page: {
+    flex: 1,
     paddingHorizontal: 20,
     paddingTop: 18,
-  },
-  ambientOrb: {
-    borderRadius: 180,
-    position: 'absolute',
-  },
-  ambientOrbOne: {
-    backgroundColor: 'rgba(102, 182, 255, 0.12)',
-    height: 260,
-    right: -84,
-    top: -22,
-    width: 260,
-  },
-  ambientOrbTwo: {
-    backgroundColor: 'rgba(255, 194, 123, 0.08)',
-    bottom: 90,
-    height: 220,
-    left: -70,
-    width: 220,
-  },
-  kicker: {
-    color: '#8EA7C8',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.3,
-    marginBottom: 10,
-    textTransform: 'uppercase',
+    paddingBottom: 20,
   },
   headline: {
-    color: '#F5F7FB',
-    fontSize: 30,
+    color: '#F8FAFC',
+    fontSize: 28,
     fontWeight: '800',
-    letterSpacing: -1,
-    lineHeight: 36,
-    marginBottom: 26,
-    maxWidth: 520,
+    letterSpacing: -0.8,
+    lineHeight: 34,
+    marginBottom: 6,
   },
-  bubble: {
-    backgroundColor: 'rgba(12, 28, 45, 0.92)',
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 34,
-    borderWidth: 1,
-    marginBottom: 12,
-    marginTop: 4,
-    paddingHorizontal: 18,
-    paddingTop: 18,
-    paddingBottom: 22,
-  },
-  assistantLabel: {
-    color: '#F4C77D',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    marginBottom: 8,
-    textTransform: 'uppercase',
-  },
-  assistantCopy: {
-    color: '#C6D6EA',
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 20,
-    maxWidth: 520,
+  subheadline: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 22,
   },
 });
 
